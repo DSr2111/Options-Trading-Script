@@ -29,8 +29,17 @@ def index():
         config['min_days_to_expiry'] = int(request.form['min_days'])
         config['max_days_to_expiry'] = int(request.form['max_days'])
         
-        # Get selected stocks (returns a list, or None if nothing selected)
+        # Get selected stocks
         selected_stocks = request.form.getlist('stocks')
+        
+        # Get custom tickers and append to selected stocks
+        custom_tickers = request.form.get('custom_tickers', '').strip()
+        if custom_tickers:
+            custom_ticker_list = [ticker.strip().upper() for ticker in custom_tickers.split(',') if ticker.strip()]
+            selected_stocks.extend(custom_ticker_list)
+            # Remove duplicates while preserving order
+            selected_stocks = list(dict.fromkeys(selected_stocks))
+        
         config['stocks'] = selected_stocks if selected_stocks else AVAILABLE_STOCKS
         
         # Run the IronCondorFinder

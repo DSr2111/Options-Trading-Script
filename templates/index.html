@@ -27,10 +27,15 @@
           <h1 class="card-title text-center mb-4">
             Iron Condor Recommendation App
           </h1>
+          <div
+            id="error-message"
+            class="alert alert-danger d-none"
+            role="alert"
+          ></div>
           <form method="POST" id="input-form">
             <div class="row g-3">
               <div class="col-md-6">
-                <label for="portfolio_value" class="form-label"
+                <label for="portfolio_value" class="form 1form-label"
                   >Portfolio Value ($)</label
                 >
                 <input
@@ -93,7 +98,7 @@
                   required
                 />
               </div>
-              <div class="col-12">
+              <div class="col-md-6">
                 <label for="stocks" class="form-label">Select Stocks</label>
                 <select class="form-select" id="stocks" name="stocks" multiple>
                   {% for stock in available_stocks %}
@@ -104,6 +109,18 @@
                   >Hold Ctrl (Windows) or Cmd (Mac) to select multiple
                   stocks.</small
                 >
+              </div>
+              <div class="col-md-6">
+                <label for="custom_tickers" class="form-label"
+                  >Add Custom Tickers (comma-separated)</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="custom_tickers"
+                  name="custom_tickers"
+                  placeholder="e.g., AMZN, GOOG"
+                />
               </div>
             </div>
             <div class="text-center mt-4">
@@ -123,7 +140,12 @@
       {% if table_html %}
       <div class="card shadow-sm mt-4">
         <div class="card-body">
-          <h2 class="card-title text-center mb-4">Recommended Iron Condors</h2>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="card-title mb-0">Recommended Iron Condors</h2>
+            <a href="#" class="btn btn-outline-primary btn-sm" id="download-csv"
+              >Download as CSV</a
+            >
+          </div>
           <div class="table-responsive">{{ table_html | safe }}</div>
         </div>
       </div>
