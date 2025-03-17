@@ -4,6 +4,9 @@ import pandas as pd
 
 app = Flask(__name__)
 
+# Available stocks (same as in iron_condor_app.py)
+AVAILABLE_STOCKS = ['SPY', 'AAPL', 'TSLA', 'NVDA', 'AMD', 'GOOGL', 'NFLX', 'PLTR', 'MSFT', 'C', 'GS', 'META']
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     # Default parameters
@@ -13,7 +16,7 @@ def index():
         'target_premium': 7500,
         'min_days_to_expiry': 5,
         'max_days_to_expiry': 200,
-        'stocks': ['SPY', 'AAPL', 'TSLA', 'NVDA', 'AMD', 'GOOGL', 'NFLX', 'PLTR', 'MSFT', 'C', 'GS', 'META'],
+        'stocks': AVAILABLE_STOCKS,  # Default to all stocks
         'output_file': None
     }
     
@@ -25,6 +28,10 @@ def index():
         config['target_premium'] = float(request.form['target_premium'])
         config['min_days_to_expiry'] = int(request.form['min_days'])
         config['max_days_to_expiry'] = int(request.form['max_days'])
+        
+        # Get selected stocks (returns a list, or None if nothing selected)
+        selected_stocks = request.form.getlist('stocks')
+        config['stocks'] = selected_stocks if selected_stocks else AVAILABLE_STOCKS
         
         # Run the IronCondorFinder
         finder = IronCondorFinder(config)
@@ -41,12 +48,12 @@ def index():
             'put_sell_strike': 2, 'put_buy_strike': 2, 'total_premium_all': 2,
             'max_loss': 2, 'pop': 2, 'weekly_premium': 2
         })
-        # Convert DataFrame to HTML table
-        table_html = display_df.to_html(index=False, classes='table table-striped table-bordered')
+        # Convert DataFrame to HTML table with custom classes for conditional formatting
+        table_html = display_df.to_html(index=False, classes='table table-striped table-bordered', table_id='results-table')
     else:
         table_html = None
     
-    return render_template('index.html', table_html=table_html, config=config)
+    return render_template('index.html', table_html=table_html, config=config, available_stocks=AVAILABLE_STOCKS)
 
 if __name__ == '__main__':
     app.run(debug=True)

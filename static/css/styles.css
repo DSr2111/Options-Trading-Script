@@ -20,13 +20,15 @@ h2 {
   color: #555;
 }
 
-.form-control {
+.form-control,
+.form-select {
   border-radius: 5px;
   border: 1px solid #ced4da;
   transition: border-color 0.3s;
 }
 
-.form-control:focus {
+.form-control:focus,
+.form-select:focus {
   border-color: #007bff;
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
 }
@@ -46,20 +48,45 @@ h2 {
 
 .table {
   margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .table th,
 .table td {
   vertical-align: middle;
   text-align: center;
+  padding: 12px 15px;
+  border: none;
 }
 
 .table thead th {
   background-color: #007bff;
   color: #ffffff;
-  border: none;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.table tbody tr {
+  transition: background-color 0.2s;
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 123, 255, 0.05);
+  background-color: rgba(0, 123, 255, 0.03);
+}
+
+.table tbody tr:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* Conditional formatting for high PoP */
+.high-pop {
+  border: 2px solid #28a745 !important;
+  border-left: 4px solid #28a745 !important;
+  background-color: rgba(40, 167, 69, 0.05);
 }
