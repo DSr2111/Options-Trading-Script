@@ -17,7 +17,8 @@ def index():
         'min_days_to_expiry': 5,
         'max_days_to_expiry': 200,
         'stocks': AVAILABLE_STOCKS,  # Default to all stocks
-        'output_file': None
+        'output_file': None,
+        'include_weekly_premium': False  # New parameter to control weekly premium column
     }
     
     recommendations = []
@@ -28,6 +29,7 @@ def index():
         config['target_premium'] = float(request.form['target_premium'])
         config['min_days_to_expiry'] = int(request.form['min_days'])
         config['max_days_to_expiry'] = int(request.form['max_days'])
+        config['include_weekly_premium'] = 'include_weekly_premium' in request.form
         
         # Get selected stocks
         selected_stocks = request.form.getlist('stocks')
@@ -49,14 +51,23 @@ def index():
     # Prepare results for display
     if recommendations:
         df = pd.DataFrame(recommendations)
-        display_df = df[['ticker', 'expiration_date', 'current_price', 'call_sell_strike', 'call_buy_strike',
-                         'put_sell_strike', 'put_buy_strike', 'contracts', 'total_premium_all',
-                         'max_loss', 'pop', 'weekly_premium']]
+        display_columns = ['ticker', 'expiration_date', 'current_price', 'call_sell_strike', 'call_buy_strike',
+                           'put_sell_strike', 'put_buy_strike', 'contracts', 'total_premium_all',
+                           'max_loss', 'pop']
+        if config['include_weekly_premium']:
+            display_columns.append('weekly_premium')
+        
+        display_df = df[display_columns]
         display_df = display_df.round({
             'current_price': 2, 'call_sell_strike': 2, 'call_buy_strike': 2,
             'put_sell_strike': 2, 'put_buy_strike': 2, 'total_premium_all': 2,
-            'max_loss': 2, 'pop': 2, 'weekly_premium': 2
+            'max_loss': 2, 'pop': 2
         })
+        display_df['pop'] = display_df['pop'].apply(lambda x: f"{x:.2f}%")
+        
+        # Sort by total premium
+        display_df = display_df.sort_values(by='total_premium_all', ascending=False)
+        
         # Convert DataFrame to HTML table with custom classes for conditional formatting
         table_html = display_df.to_html(index=False, classes='table table-striped table-bordered', table_id='results-table')
     else:
