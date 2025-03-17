@@ -48,14 +48,18 @@ def index():
     
     # Prepare results for display
     if recommendations:
+        # Sort by total_premium_all instead of weekly_premium
+        recommendations.sort(key=lambda x: x['total_premium_all'], reverse=True)
+        
         df = pd.DataFrame(recommendations)
+        # Remove weekly_premium from the table
         display_df = df[['ticker', 'expiration_date', 'current_price', 'call_sell_strike', 'call_buy_strike',
                          'put_sell_strike', 'put_buy_strike', 'contracts', 'total_premium_all',
-                         'max_loss', 'pop', 'weekly_premium']]
+                         'max_loss', 'pop']]
         display_df = display_df.round({
             'current_price': 2, 'call_sell_strike': 2, 'call_buy_strike': 2,
             'put_sell_strike': 2, 'put_buy_strike': 2, 'total_premium_all': 2,
-            'max_loss': 2, 'pop': 2, 'weekly_premium': 2
+            'max_loss': 2, 'pop': 2
         })
         # Convert DataFrame to HTML table with custom classes for conditional formatting
         table_html = display_df.to_html(index=False, classes='table table-striped table-bordered', table_id='results-table')
